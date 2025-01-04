@@ -1,3 +1,4 @@
+/*
 package app.cta4j.provider;
 
 import com.google.inject.Provider;
@@ -24,3 +25,4 @@ public final class MastodonClientProvider implements Provider<MastodonClient> {
                       .build();
     }
 }
+*/
