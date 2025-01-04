@@ -79,7 +79,7 @@ public final class AlertService {
 
         String url = alert.url();
 
-        return "[%s] %s %s - %s %s".formatted(impact, headline, startString, endString, url);
+        return "[%s] %s %s - %s%n%s".formatted(impact, headline, startString, endString, url);
     }
 
     private String postSkeet(String text) {
@@ -167,8 +167,6 @@ public final class AlertService {
 
     public void postAlerts() {
         AlertService.LOGGER.info("Posting alerts");
-
-        System.out.println("Posting alerts");
 
         List<Alert> alerts = this.client.getAlerts()
                                         .alertBody()
