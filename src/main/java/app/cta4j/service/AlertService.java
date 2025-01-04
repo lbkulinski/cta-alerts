@@ -8,8 +8,6 @@ import io.github.redouane59.twitter.dto.tweet.Tweet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import redis.clients.jedis.UnifiedJedis;
-import social.bigbone.MastodonClient;
-import social.bigbone.api.entity.Status;
 import work.socialhub.kbsky.Bluesky;
 import work.socialhub.kbsky.api.entity.app.bsky.feed.FeedPostRequest;
 import work.socialhub.kbsky.api.entity.com.atproto.server.ServerCreateSessionRequest;
@@ -27,7 +25,9 @@ public final class AlertService {
 
     private final TwitterClient twitterClient;
 
+/*
     private final MastodonClient mastodonClient;
+*/
 
     private final Bluesky blueskyClient;
 
@@ -39,14 +39,14 @@ public final class AlertService {
 
     @Inject
     public AlertService(AlertClient client, UnifiedJedis jedis, TwitterClient twitterClient,
-                        MastodonClient mastodonClient, Bluesky blueskyClient) {
+                        /*MastodonClient mastodonClient,*/ Bluesky blueskyClient) {
         this.client = Objects.requireNonNull(client);
 
         this.jedis = Objects.requireNonNull(jedis);
 
         this.twitterClient = Objects.requireNonNull(twitterClient);
 
-        this.mastodonClient = Objects.requireNonNull(mastodonClient);
+        /*this.mastodonClient = Objects.requireNonNull(mastodonClient);*/
 
         this.blueskyClient = Objects.requireNonNull(blueskyClient);
     }
@@ -138,7 +138,7 @@ public final class AlertService {
             AlertService.LOGGER.error(message, e);
         }
 
-        try {
+        /*try {
             Status status = this.mastodonClient.statuses()
                                                .postStatus(text)
                                                .execute();
@@ -150,7 +150,7 @@ public final class AlertService {
             String message = e.getMessage();
 
             AlertService.LOGGER.error(message, e);
-        }
+        }*/
 
         try {
             String skeetId = this.postSkeet(text);
