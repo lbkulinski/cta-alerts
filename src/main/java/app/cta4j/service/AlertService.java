@@ -168,6 +168,8 @@ public final class AlertService {
     public void postAlerts() {
         AlertService.LOGGER.info("Posting alerts");
 
+        System.out.println("Posting alerts");
+
         List<Alert> alerts = this.client.getAlerts()
                                         .alertBody()
                                         .alerts();
