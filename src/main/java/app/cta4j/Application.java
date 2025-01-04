@@ -15,8 +15,6 @@ public class Application {
 
         AlertService service = injector.getInstance(AlertService.class);
 
-        service.postAlerts();
-
         try (ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor()) {
             ScheduledFuture<?> future = executor.scheduleAtFixedRate(service::postAlerts, 0L, 5L, TimeUnit.MINUTES);
 

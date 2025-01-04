@@ -166,7 +166,7 @@ public final class AlertService {
     }
 
     public void postAlerts() {
-        System.out.println("Posting alerts");
+        AlertService.LOGGER.info("Posting alerts");
 
         List<Alert> alerts = this.client.getAlerts()
                                         .alertBody()
