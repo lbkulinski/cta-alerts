@@ -7,7 +7,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import java.time.Instant;
-import java.time.LocalDate;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record Alert(

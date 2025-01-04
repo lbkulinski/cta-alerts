@@ -5,10 +5,11 @@ import app.cta4j.model.Alert;
 import com.google.inject.Inject;
 import io.github.redouane59.twitter.TwitterClient;
 import io.github.redouane59.twitter.dto.tweet.Tweet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import redis.clients.jedis.UnifiedJedis;
 import social.bigbone.MastodonClient;
 import social.bigbone.api.entity.Status;
-import social.bigbone.api.exception.BigBoneRequestException;
 import work.socialhub.kbsky.Bluesky;
 import work.socialhub.kbsky.api.entity.app.bsky.feed.FeedPostRequest;
 import work.socialhub.kbsky.api.entity.com.atproto.server.ServerCreateSessionRequest;
@@ -17,6 +18,7 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public final class AlertService {
     private final AlertClient client;
@@ -28,6 +30,12 @@ public final class AlertService {
     private final MastodonClient mastodonClient;
 
     private final Bluesky blueskyClient;
+
+    private static final Logger LOGGER;
+
+    static {
+        LOGGER = LoggerFactory.getLogger(AlertService.class);
+    }
 
     @Inject
     public AlertService(AlertClient client, UnifiedJedis jedis, TwitterClient twitterClient,
@@ -114,14 +122,20 @@ public final class AlertService {
 
         String text = this.getPostText(alert);
 
-        Tweet tweet = this.twitterClient.postTweet(text);
+        Map<String, String> postIds = new ConcurrentHashMap<>();
 
-        String tweetId = tweet.getId();
+        try {
+            Tweet tweet = this.twitterClient.postTweet(text);
 
-        Map<String, String> postIds = new HashMap<>();
+            String tweetId = tweet.getId();
 
-        if (tweetId != null) {
-            postIds.put("twitter", tweetId);
+            if (tweetId != null) {
+                postIds.put("twitter", tweetId);
+            }
+        } catch (Exception e) {
+            String message = e.getMessage();
+
+            AlertService.LOGGER.error(message, e);
         }
 
         try {
@@ -132,18 +146,28 @@ public final class AlertService {
             String mastodonId = status.getId();
 
             postIds.put("mastodon", mastodonId);
-        } catch (BigBoneRequestException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            String message = e.getMessage();
+
+            AlertService.LOGGER.error(message, e);
         }
 
-        String skeetId = this.postSkeet(text);
+        try {
+            String skeetId = this.postSkeet(text);
 
-        postIds.put("bluesky", skeetId);
+            postIds.put("bluesky", skeetId);
+        } catch (Exception e) {
+            String message = e.getMessage();
+
+            AlertService.LOGGER.error(message, e);
+        }
 
         return Map.copyOf(postIds);
     }
 
     public void postAlerts() {
+        System.out.println("Posting alerts");
+
         List<Alert> alerts = this.client.getAlerts()
                                         .alertBody()
                                         .alerts();
